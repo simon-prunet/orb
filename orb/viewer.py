@@ -408,7 +408,7 @@ class BaseViewer(object):
         val = int(c.get_value())
         
         if self.zaxis is not None:
-            zval = self.zaxis[c.get_value()]
+            zval = self.zaxis[int(c.get_value())]
             if self.wavenumber:
                 unit = 'cm-1'
                 conv = '{:.2f} nm'.format(utils.spectrum.cm12nm(zval))
