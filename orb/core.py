@@ -2636,7 +2636,8 @@ class Cube(Tools):
     def export(self, export_path, x_range=None, y_range=None,
                z_range=None, header=None, overwrite=False,
                force_hdf5=False, force_fits=False,
-               calibration_laser_map_path=None, mask=None):
+               calibration_laser_map_path=None, mask=None,
+               deep_frame_path=None):
         
         """Export cube as one FITS/HDF5 file.
 
@@ -2671,6 +2672,9 @@ class Cube(Tools):
         :param mask: (Optional) If a mask is given. Exported data is
           masked. A NaN in the mask flags for a masked pixel. Other
           values are not considered (default None).
+
+	:param deep_frame_path: (Optional) Path to a deep frame to 
+          append (default None).
         """
         if force_fits and force_hdf5:
             self._print_error('force_fits and force_hdf5 cannot be both set to True')
@@ -2732,6 +2736,10 @@ class Cube(Tools):
             if calibration_laser_map is not None:
                 outcube.append_calibration_laser_map(calibration_laser_map,
                                                      header=calib_map_hdr)
+
+            if deep_frame_path is not None:
+                deep_frame = self.read_fits(deep_frame_path)
+                outcube.append_deep_frame(deep_frame)
             
             if not self.is_quad_cube: # frames export
                 progress = ProgressBar(zmax-zmin)
