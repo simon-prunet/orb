@@ -1345,7 +1345,7 @@ def fit_sitelle_phase_map(phase_map, phase_map_err, calib_laser_map,
 
     # first fit of the linear parameters
     p_ind = np.array(list([0])*(POLY_DEG+1) + [1,1,1,1,1,1])
-    p_fix = calib_fit_params[:-1]
+    p_fix = calib_fit_params[:-2]
     fit = scipy.optimize.leastsq(diff_phase_map,
                                  [0., 0., 0.],
                                  args=(calib_laser_map_bin,
