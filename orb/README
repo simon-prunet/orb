@@ -1,0 +1,3 @@
+gcc -c -fPIC -std=c99 -lm -D_GNU_SOURCE -Wall -pedantic -fopenmp -I/usr/include/python2.7 -o cutils.o cutils.c
+gcc -shared -Wl,-soname,cutils.so -o cutils.so cutils.o
+

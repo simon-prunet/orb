@@ -608,9 +608,9 @@ def fit_map_zernike(data_map, weights_map, nmodes):
       libtim. It can be found in ORB module in ./ext/zern.py.
     """
     # bigger version used to fit corners
-    data_map_big = np.zeros(np.array(data_map.shape) * math.sqrt(2.) + 1,
+    data_map_big = np.zeros((np.array(data_map.shape) * math.sqrt(2.) + 1).astype(int),
                            dtype=float)
-    borders = (np.array(data_map_big.shape) - np.array(data_map.shape))/2.
+    borders = ((np.array(data_map_big.shape) - np.array(data_map.shape))/2.).astype(int)
     data_map_big[borders[0]:borders[0]+data_map.shape[0],
                  borders[1]:borders[1]+data_map.shape[1]] = np.copy(data_map)
     mask = np.zeros_like(data_map_big, dtype=float)
@@ -1345,7 +1345,7 @@ def fit_sitelle_phase_map(phase_map, phase_map_err, calib_laser_map,
 
     # first fit of the linear parameters
     p_ind = np.array(list([0])*(POLY_DEG+1) + [1,1,1,1,1,1])
-    p_fix = calib_fit_params[:-1]
+    p_fix = calib_fit_params[:-2]
     fit = scipy.optimize.leastsq(diff_phase_map,
                                  [0., 0., 0.],
                                  args=(calib_laser_map_bin,

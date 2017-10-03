@@ -257,8 +257,8 @@ def fit_zernike(wavefront, zern_data={}, nmodes=10, startmode=1, fitweight=None,
 		center = -np.r_[center] * min(wavefront.shape)
 
 	# Make cropping slices to select only central part of the wavefront
-	xslice = slice(center[0]-rad, center[0]+rad)
-	yslice = slice(center[1]-rad, center[1]+rad)
+	xslice = slice(int(center[0]-rad), int(center[0]+rad))
+	yslice = slice(int(center[1]-rad), int(center[1]+rad))
 
 	# Compute Zernike basis if absent
 	if (not zern_data.has_key('modes')):
