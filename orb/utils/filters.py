@@ -3,7 +3,7 @@
 # Author: Thomas Martin <thomas.martin.1@ulaval.ca>
 # File: filters.py
 
-## Copyright (c) 2010-2016 Thomas Martin <thomas.martin.1@ulaval.ca>
+## Copyright (c) 2010-2017 Thomas Martin <thomas.martin.1@ulaval.ca>
 ## 
 ## This file is part of ORB
 ##
@@ -20,6 +20,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with ORB.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import numpy as np
 import warnings
 from scipy import interpolate
@@ -234,9 +235,9 @@ def get_filter_edges_pix(filter_file_path, correction_factor, step, order,
         np.array([filter_min_cm1, filter_max_cm1]),
         cm1_axis_min, cm1_axis_step)
 
-    #if int(order) & 1:
-    #    filter_range = n - filter_range
-    #    filter_range = filter_range[::-1]
+    if int(order) & 1:
+        filter_range = n - filter_range
+        filter_range = filter_range[::-1]
     
     filter_range[filter_range < 0] = 0
     filter_range[filter_range > n] = (n - 1)
@@ -292,8 +293,12 @@ def get_filter_function(filter_file_path, step, order, n,
 
     f_axis = interpolate.UnivariateSpline(np.arange(n),
                                           spectrum_axis)
-    fpix_axis = interpolate.UnivariateSpline(spectrum_axis[::-1],
-                                             np.arange(n)[::-1])
+    if (not wavenumber):
+        fpix_axis = interpolate.UnivariateSpline(spectrum_axis,
+                                                 np.arange(n))
+    else:
+        fpix_axis = interpolate.UnivariateSpline(spectrum_axis[::-1],
+                                                 np.arange(n)[::-1])
 
     # Interpolation of the filter function
     interpol_f = interpolate.UnivariateSpline(filter_nm, filter_trans, 
@@ -317,7 +322,7 @@ def get_filter_function(filter_file_path, step, order, n,
         warnings.warn("Filter edges (%f -- %f nm) determined automatically using a threshold of %f %% transmission coefficient"%(f_axis(filter_min), f_axis(filter_max), filter_threshold*100.))
     else:
         if not silent:
-            print "Filter edges read from filter file: %f -- %f"%(filter_min, filter_max)
+            logging.info("Filter edges read from filter file: %f -- %f"%(filter_min, filter_max))
 
         # filter edges converted to index of the filter vector
         filter_min = int(fpix_axis(filter_min))
