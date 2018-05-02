@@ -397,7 +397,7 @@ def compute_optimal_texp(star_flux, seeing, plate_scale,
 
     return saturation/max_flux
     
-def fit_std_spectrum(real_spectrum, std_spectrum, polydeg=2):
+def fit_std_spectrum(real_spectrum, th_spectrum, polydeg=2):
     """Fit a real spectrum multiplied by a polynomial over a standard
     spectrum.
 
@@ -405,29 +405,29 @@ def fit_std_spectrum(real_spectrum, std_spectrum, polydeg=2):
     curve.
 
     :param real_spectrum: Observed spectrum
-    :param std_spectrum: Standard spectrum
+    :param th_spectrum: Standard spectrum
     :param polydeg: Degree of the polynomial
     """
 
-    def model(p, x, real_spectrum):
-        return (real_spectrum
+    def model(p, x, th_spectrum):
+        return (th_spectrum
                 * np.polynomial.polynomial.polyval(x, p))
 
 
-    def diff(p, x, std_spectrum, real_spectrum):
-        res = model(p, x, real_spectrum) - std_spectrum
+    def diff(p, x, th_spectrum, real_spectrum):
+        res = model(p, x, th_spectrum) - real_spectrum
         return res[~np.isnan(res)]
 
     p = np.zeros((polydeg+1), dtype=float)
     x = np.arange(real_spectrum.shape[0], dtype=float)
-    p[0] = np.nanmedian(std_spectrum / real_spectrum)
+    p[0] = np.nanmedian(std_spectrum / real_spectrum)/1e16
     
     p = scipy.optimize.leastsq(
         diff, p, args=(
-            x, std_spectrum,
+            x, th_spectrum*1e16,
             real_spectrum))[0]
     
-    return np.polynomial.polynomial.polyval(x, p)
+    return np.polynomial.polynomial.polyval(x, p)*1e16
 
 
 def convert_cm1_flux2fluxdensity(a, cm1_axis):
