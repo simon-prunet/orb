@@ -420,7 +420,7 @@ def fit_std_spectrum(real_spectrum, th_spectrum, polydeg=2):
 
     p = np.zeros((polydeg+1), dtype=float)
     x = np.arange(real_spectrum.shape[0], dtype=float)
-    p[0] = np.nanmedian(std_spectrum / real_spectrum)/1e16
+    p[0] = np.nanmedian(real_spectrum/th_spectrum)/1e16
     
     p = scipy.optimize.leastsq(
         diff, p, args=(
