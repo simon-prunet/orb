@@ -34,7 +34,7 @@ import fit
 import orb.cutils
 
 # OTHER IMPORTS
-import gtk, gobject
+import gtk
 import gtk.gdk
 import numpy as np
 import astropy.wcs as pywcs
@@ -53,6 +53,7 @@ from matplotlib.lines import Line2D
 
 import pylab as pl
 
+import gobject
 gobject.threads_init()
 
 
@@ -132,6 +133,7 @@ class BaseViewer(object):
           stdout (default False).
         """
 
+	gobject.threads_init()
         STD_FORMAT = '%(asctime)s | %(levelname)1.1s | %(filename)s:%(lineno)d (%(funcName)s) | %(message)s'
     
         
@@ -980,6 +982,7 @@ class ZPlotWindow(PopupWindow):
         :param simple: (Optional) If True, window display only a plot
           (no fit plugin) (default False).
         """
+	gobject.threads_init()
         SIZE = (8,6)
         DPI = 75
         PopupWindow.__init__(self, title=title,
