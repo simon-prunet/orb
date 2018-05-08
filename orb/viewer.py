@@ -95,6 +95,7 @@ class BaseViewer(object):
     plot = None
     
     image_region = None
+    region = None
     
     autocut_methods = None
 
@@ -133,7 +134,7 @@ class BaseViewer(object):
           stdout (default False).
         """
 
-	gobject.threads_init()
+        gobject.threads_init()
         STD_FORMAT = '%(asctime)s | %(levelname)1.1s | %(filename)s:%(lineno)d (%(funcName)s) | %(message)s'
     
         
@@ -453,7 +454,8 @@ class BaseViewer(object):
 
         :param region: Region instance
         """
-        
+
+        self.region = region
         self.image_region = self.canvas.image[region.get_selected_pixels()]
         x_range = region.x_range
         y_range = region.y_range
@@ -982,7 +984,7 @@ class ZPlotWindow(PopupWindow):
         :param simple: (Optional) If True, window display only a plot
           (no fit plugin) (default False).
         """
-	gobject.threads_init()
+        gobject.threads_init()
         SIZE = (8,6)
         DPI = 75
         PopupWindow.__init__(self, title=title,
