@@ -2,7 +2,7 @@
 # Author: Thomas Martin <thomas.martin.1@ulaval.ca>
 # Filter name : C2
 # Wavelength in nm | Transmission percentage
-# FILTER_MIN 559.3
+# FILTER_MIN 560.3
 # FILTER_MAX 625.5
 # ORDER 5
 # STEP 1680
