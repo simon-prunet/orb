@@ -89,3 +89,8 @@ BIAS_CALIB_PARAM_B 1417.34030164
 
 ## WCS parameters
 WCS_ROTATION 1.5 # Initial rotation angle of the image [in degree]
+
+## Modulation efficiency: place holder with fake 0.0 value. Either read from
+## job file or from filter file.
+MODULATION_EFFICIENCY 0.0
+

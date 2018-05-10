@@ -562,6 +562,7 @@ class Tools(object):
             self.set_config('CALIB_ORDER', int)
             self.set_config('CALIB_STEP_SIZE', float)
             self.set_config('PHASE_FIT_DEG', int)
+            self.set_config('MODULATION_EFFICIENCY', float)
 
             self.set_config('OPTIM_DARK_CAM1', bool) 
             self.set_config('OPTIM_DARK_CAM2', bool)
