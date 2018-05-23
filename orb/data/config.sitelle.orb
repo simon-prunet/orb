@@ -39,11 +39,11 @@ OFF_AXIS_ANGLE_MAX 19.5 # Max off-axis angle
 OFF_AXIS_ANGLE_CENTER 15.35 # off-axis ange at the center of the FOV
 
 
-## Disalignment guess (last update 2016-09-30 from data obtained 2016-08-29)
-INIT_ANGLE 2.09 # Rough angle between images of the camera 1 and
+## Disalignment guess (last update 2018A)
+INIT_ANGLE 2.3 # Rough angle between images of the camera 1 and
 	       # images of the camera 2 [in degree]
-INIT_DX -29.8 # Rough x axis disalignment [in pixel] (unbinned)
-INIT_DY -23.6 # Rough y axis disalignment [in pixel] (unbinned)
+INIT_DX 2 # Rough x axis disalignment [in pixel] (unbinned)
+INIT_DY -2 # Rough y axis disalignment [in pixel] (unbinned)
 
 ## Calibration parameters
 CALIB_NM_LASER 543.5 # Wavelength of the calibration laser [in nm]
@@ -70,7 +70,7 @@ INIT_FWHM 1. # Rough estimate of the usual stars FWHM [in arcsecond]
 PSF_PROFILE gaussian # PSF used to fit stars (can be gaussian of moffat)
 MOFFAT_BETA 3.5 # default beta parameter for the Moffat PSF
 DETECT_STACK 5 # Number of frames to combine for star detection
-ALIGNER_RANGE_COEFF 0.01 # Range coefficient for the aligner search
+ALIGNER_RANGE_COEFF 0.005 # Range coefficient for the aligner search
 
 ## Detectors parameters
 SATURATION_THRESHOLD 65000
