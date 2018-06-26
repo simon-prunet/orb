@@ -5490,8 +5490,10 @@ class PhaseFile(Tools):
                 self.config.CALIB_NM_LASER))
         if return_spline:
             nonans = ~np.isnan(phase)
+            # The following interpolation has a smoothness constraint, in order to
+            # control the extrapolated values at the filter borders (outside the margin, see orbs-create-phase-file)
             return interpolate.UnivariateSpline(
-                cm1_axis[nonans], phase[nonans], k=3, s=0, ext=1)
+                cm1_axis[nonans], phase[nonans], k=5, ext=0)
         else: return phase
             
 

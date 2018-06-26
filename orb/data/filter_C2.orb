@@ -2,8 +2,8 @@
 # Author: Thomas Martin <thomas.martin.1@ulaval.ca>
 # Filter name : C2
 # Wavelength in nm | Transmission percentage
-# FILTER_MIN 560.3
-# FILTER_MAX 625.5
+# FILTER_MIN 558.6
+# FILTER_MAX 628.9
 # ORDER 5
 # STEP 1680
 # MODULATION_EFFICIENCY 0.7
