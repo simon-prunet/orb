@@ -214,12 +214,177 @@ class Interferogram(core.Vector1d):
 
         return spec
 
+    def alternative_transform(self):
+
+        '''
+        This transform does not use the Merz ramp. It takes into account the inbalance
+        in the interferogram to reconstruct the spectral bins by a least-square approach
+        :return:
+        '''
+
+        mask = np.ones(self.step_nb,dtype=float)
+        mask[np.isnan(self.data)] = 0
+        zp_nb = self.step_nb * 2
+        zp_interf = np.zeros(zp_nb,dtype=float)
+
+        # Zero padding
+        zp_interf[:self.step_nb] = np.copy(self.data)
+        zp_interf[:self.step_nb][mask==0] = 0
+
+        # Put zpd in first position (easier for my brain)
+        zp_interf = np.roll(zp_interf,-self.params['zpd_index'])
+
+        # Create mask for zero-padded interferogram
+        zp_mask = np.ones(zp_nb, dtype=float)
+        # Missing values if any
+        zp_mask[:self.step_nb] = mask
+        # Put zpd in first position
+        zp_mask = np.roll(zp_mask,-self.params['zpd_index'])
+        # Interferogram inbalance mask
+        zp_mask[-4*self.params['zpd_index']+1:-self.params['zpd_index']] = 0
+
+        def interf2spec(interf,mask=None):
+            if mask is not None:
+                 interf *= mask
+            f=np.fft.fft(interf,norm='ortho')
+            return f.real[:f.size/2+1]
+
+        def spec2interf(f,mask=None,odd=False):
+            if odd:
+                ff = np.concatenate((f,np.conj(f[::-1][:-1])))
+            else:
+                ff = np.concatenate((f,np.conj(f[::-1][1:-1])))
+            interf=np.fft.ifft(ff,norm='ortho')
+            if mask is not None:
+                interf *= mask
+            return interf.real
+
+        def spec2spec(f,mask=None,odd=False):
+            interf = spec2interf(f,mask=mask,odd=odd)
+            spec = interf2spec(interf,mask=mask)
+            return spec
+
+        def gls(interf,mask=None,epsilon=1e-12):
+            odd = interf.size & 1
+            rhs = interf2spec(interf,mask=mask)
+            def Amul(f):
+                return spec2spec(f,mask=mask,odd=odd)
+            guess = np.zeros(rhs.size,dtype=rhs.dtype)
+            spec = cg_solve(rhs,Amul,guess,epsilon=epsilon)
+            return spec
+
+        def cg_solve(b, Amul, x0, epsilon=1e-6, nstepmax=100, Mdiv=None):
+
+            x = x0
+            r = b - Amul(x)
+            if (Mdiv is not None):
+                z = Mdiv(r)
+            else:
+                z = r
+            p = z * 1.
+            rz = np.dot(r, z)
+
+            xold = x * 1.
+            rold = r * 1.
+            rzold = rz * 1.
+
+            nn = 0
+            while nn < nstepmax:
+                Ap = Amul(p)
+                if (rz != 0):
+                    alpha = rz / np.dot(p, Ap)
+                else:
+                    alpha = 0.0
+                xold = x
+                rold = r
+                rzold = rz
+                x = x + alpha * p
+                r = r - alpha * Ap
+
+                print(nn, np.sqrt(np.dot(r, r)), cg_crit(r,epsilon))
+
+                if cg_crit(r, epsilon):
+                    return x
+                if (Mdiv is not None):
+                    z = Mdiv(r)
+                else:
+                    z = r
+                rz = np.dot(r, z)
+                if (rz != 0):
+                    beta = rz / rzold
+                else:
+                    beta = 0.
+                p = z + beta * p
+                nn += 1
+
+            print 'CG did not converge in %d iterations ' % nstepmax
+            return x
+
+        def cg_crit(r, epsilon):
+
+            normr = np.sqrt(np.dot(r, r))
+            if (normr < epsilon):
+                return True
+            else:
+                return False
+
+
+        res = gls(zp_interf,mask=zp_mask)
+        # Debug
+        final_interf = spec2interf(res,mask=None)
+        final_interf = np.roll(final_interf,self.params['zpd_index'])[:self.step_nb]
+        # Normalize and trim
+        res = res[:-1]*np.sqrt(zp_nb)
+        # create axis
+        if self.has_params():
+            axis = core.Axis(utils.spectrum.create_cm1_axis(
+                self.step_nb, self.params.step, self.params.order,
+                corr=self.params.calib_coeff))
+
+        else:
+            axis_step = (self.step_nb - 1) / 2. / self.step_nb
+            axis_max = (self.step_nb - 1) * axis_step
+            axis = core.Axis(np.linspace(0, axis_max, self.step_nb))
+
+        spec = Spectrum(res.astype('complex'), axis, params=self.params)
+
+        # spectrum is flipped if order is even
+        if self.has_params():
+            if int(self.params.order)&1:
+                spec.reverse()
+
+
+        return final_interf,spec
+
+    def get_ref_spectrum(self):
+        """Reference spectrum obtained with full, balanced interferogram. For testing purpose only"""
+        new_interf = self.copy()
+        new_interf.subtract_mean()
+        zp_interf = np.zeros(2*self.step_nb,dtype=float)
+        # Zero padding
+        zp_interf[:self.step_nb] = np.copy(new_interf.data)
+
+        # Put zpd in first position (easier for my brain)
+        zp_interf = np.roll(zp_interf,-new_interf.params['zpd_index'])
+        step_nb = new_interf.step_nb
+        zpd_index = new_interf.params['zpd_index']
+        zp_interf[-(step_nb-zpd_index-1):] = zp_interf[::-1][-(step_nb-zpd_index):-1]
+        spec = np.fft.fft(zp_interf)
+        return spec[:self.step_nb]
+
+
     def get_spectrum(self):
         """Classical spectrum computation method. Returns a Spectrum instance."""
         new_interf = self.copy()
         new_interf.subtract_mean()
         new_interf.multiply_by_mertz_ramp()
         return new_interf.transform()
+
+    def get_spectrum_iterative(self):
+        """Iterative spectrum computation method. Returns a Spectrum instance"""
+        new_interf = self.copy()
+        new_interf.subtract_mean()
+        return new_interf.alternative_transform()
 
     def get_phase(self):
         """Classical phase computation method. Returns a Phase instance."""
