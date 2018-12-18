@@ -1135,8 +1135,9 @@ def compute_radec_pm(ra_deg, dec_deg, pm_ra_mas, pm_dec_mas, yr):
     dec = dec_deg + (pm_dec_mas * yr) * 1e-3 / 3600.
     if ra > 360. : ra -= 360.
     if ra < 0. : ra += 360.
-    if dec > 90.: dec = 90. - dec
-    if dec < 0.: dec = -dec
+    ## WTF ???
+    # if dec > 90.: dec = 90. - dec
+    # if dec < 0.: dec = -dec
     return ra, dec
 
 def ra2deg(ra):
