@@ -56,7 +56,7 @@ import astropy.io.fits as pyfits
 import astropy.wcs as pywcs
 from scipy import interpolate
 
-import pygit2
+#import pygit2
 
 ## MODULES IMPORTS
 import cutils
@@ -229,10 +229,10 @@ class Logger(object):
 
         # get git branch (if possible)
         repo_path = os.path.abspath(os.path.dirname(__file__) + os.sep + '..')
-        try:
-            self.branch_name = pygit2.Repository(repo_path).head.shorthand + '|'
-        except pygit2.GitError:
-            self.branch_name = ''
+        #try:
+        #    self.branch_name = pygit2.Repository(repo_path).head.shorthand + '|'
+        #except pygit2.GitError:
+        self.branch_name = ''
         
         self.start_logging()
         
