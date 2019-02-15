@@ -1662,7 +1662,7 @@ class Astrometry(Tools):
         if fit_cube:
             self.fit_stars_in_cube(correct_alignment=True,
                                    no_aperture_photometry=True,
-                                   hpfilter=HPFILTER, multi_fit=False,
+                                   hpfilter=HPFILTER, multi_fit=True,
                                    fix_height=False, save=False)
       
         if self.star_nb < 4: 
