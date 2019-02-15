@@ -5499,8 +5499,12 @@ class PhaseFile(Tools):
             nonans = ~np.isnan(phase)
             # The following interpolation has a smoothness constraint, in order to
             # control the extrapolated values at the filter borders (outside the margin, see orbs-create-phase-file)
-            return interpolate.UnivariateSpline(
-                cm1_axis[nonans], phase[nonans], k=5, ext=0)
+            if (np.sum(nonans) < 6): # Not enough valid points, return spline with 0
+                return interpolate.UnivariateSpline(
+                    cm1_axis, cm1_axis*0, k=5, ext=0)
+            else:
+                return interpolate.UnivariateSpline(
+                    cm1_axis[nonans], phase[nonans], k=5, ext=0)
         else: return phase
             
 
