@@ -60,7 +60,8 @@ setup(
     scripts=[
         'scripts/orb-header',
         'scripts/orb-extract',
-        'scripts/orb-convert'],
+        'scripts/orb-convert',
+        'scripts/orb-viewer'],
     classifiers = [
         'Programming Language :: Python',
         'Programming Language :: Cython',
