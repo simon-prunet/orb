@@ -417,7 +417,7 @@ class FitVector(object):
                        vector),
                 prior=priors_dict,
                 fcn=self._get_model_onrange,
-                debug=True, extend=True,
+                debug=True, 
                 tol=self.fit_tol,
                 maxit=self.max_iter)
 
@@ -792,7 +792,7 @@ class Model(object):
         
         :param p_val: New full set of parameters.
         """
-        if p_val.keys() == self.p_val.keys():
+        if dict(p_val).viewkeys() == dict(self.p_val).viewkeys():
             self.p_val = copy.copy(p_val)
             self.val2free()
         else: raise Exception('bad format of passed val parameters')
@@ -2203,8 +2203,8 @@ class Cm1InputParams(InputParams):
         else:
             sigma_cov_vel = utils.fit.sigma2vel(
                 utils.fft.apod2sigma(self.base_params.apodization,
-                                     fwhm_guess_cm1.mean) / self.axis_step,
-                gvar.mean(lines_cm1), self.axis_step)
+                                     fwhm_guess_cm1) / self.axis_step,
+                lines_cm1, self.axis_step)
         return np.atleast_1d(sigma_cov_vel).astype(float)
 
         
@@ -2532,7 +2532,6 @@ class OutputParams(Params):
         raw = dict()
         for ipar in self.keys():
             raw[ipar] = self[ipar]
-        raw = utils.fit.gvardict2pickdict(raw)
         return raw
 
         
@@ -2863,7 +2862,7 @@ def fit_lines_in_vector(vector, lines, fwhm_guess, fit_tol=1e-10,
       * log(Gaussian Bayes Factor) [key: 'logGBF']
    
     """
-    #raise NotImplementedError('must be checked')
+    raise NotImplementedError('must be checked')
     ip = InputParams(vector.shape[0])
 
     ip.add_lines_model(lines, fwhm_guess, **kwargs)

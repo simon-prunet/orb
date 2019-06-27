@@ -1135,9 +1135,8 @@ def compute_radec_pm(ra_deg, dec_deg, pm_ra_mas, pm_dec_mas, yr):
     dec = dec_deg + (pm_dec_mas * yr) * 1e-3 / 3600.
     if ra > 360. : ra -= 360.
     if ra < 0. : ra += 360.
-    ## WTF ???
-    # if dec > 90.: dec = 90. - dec
-    # if dec < 0.: dec = -dec
+    if dec > 90.: dec = 90. - dec
+    if dec < 0.: dec = -dec
     return ra, dec
 
 def ra2deg(ra):
@@ -2051,7 +2050,7 @@ def get_wcs_parameters(_wcs):
 
     if deltax < 0.: raise StandardError('deltax and deltay must be equal and > 0')
     if abs(rotation) > 90. : raise StandardError('rotation angle is {} must be < 90. There must be an error.'.format(rotation))
-    #if not np.allclose(deltax, deltay): raise StandardError('deltax ({}) must be equal to deltay ({})'.format(deltax, deltay))
+    if not np.allclose(deltax, deltay): warnings.warn('deltax ({}) should be equal to deltay ({})'.format(deltax, deltay))
     deltay = float(deltax)
     
     return target_x, target_y, deltax, deltay, target_ra, target_dec, rotation
